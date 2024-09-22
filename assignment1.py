@@ -1,3 +1,5 @@
+#pip install numpy, matplotlib, scipy
+
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import welch
