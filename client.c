@@ -1,3 +1,9 @@
+
+#instructions -- run below two commands first for compile then split terminal in two terminalk run then next wo run commands
+#gcc client.c -o client -lws2_32
+#gcc server.c -o server -lws2_32
+#./server
+#./client
 #include<stdio.h>
 #include<winsock2.h>
 
