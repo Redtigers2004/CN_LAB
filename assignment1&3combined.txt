@@ -1,0 +1,118 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.signal import welch
+
+
+bitstream = input('Enter the input bitstream(for ex: 1010): ')
+bitstream =[int(b) for b in bitstream]
+
+
+bit_duration = 1
+t = np.arange(0,len(bitstream)*bit_duration,0.01)
+
+
+
+def unipolar_nrz(bits):
+    return np.repeat(bits,100)
+
+
+
+def unipolar_rz(bits):
+    signal =[]
+    for bit in bits:
+        signal.extend([bit]*50 + [0]*50)
+    return signal
+
+
+
+def polar_rz(bits):
+    signal=[]
+    for bit in bits:
+        if bit == 1:
+            signal.extend([1]*50 + [0]*50)
+        else:
+            signal.extend([-1]*50 + [0]*50)
+    return signal
+
+
+
+def polar_nrz_L(bits):
+    return np.repeat([1 if bit == 1 else -1 for bit in bits],100)
+
+
+
+def polar_nrz_I(bits):
+    signal =[]
+    last = -1
+    for bit in bits:
+        if bit == 1:
+            last = -last
+        signal.append(last)
+    return np.repeat(signal,100)
+
+
+
+def Manchester_IEEE(bits):
+    signal=[]
+    for bit in bits:
+        if bit == 1:
+            signal.extend([-1]*50 + [1]*50)
+        else:
+            signal.extend([1]*50 + [-1]*50)
+    return signal
+
+
+
+def differential_manchester(bits):
+    signal=[]
+    last = -1
+    for bit in bits:
+        if bit == 1:
+            signal.extend([last]*50 + [-last]*50)
+        else:
+            last = last
+            signal.extend([last]*50 + [-last]*50)
+    return signal
+
+
+def plot_graphs(signal,title):
+    
+    plt.figure(figsize=(12,5))
+    plt.subplot(1,2,1)
+    plt.plot(t[:len(signal)],signal)
+    plt.title(f'{title} Encoding')
+    plt.xlabel('Time')
+    plt.ylabel('Amplitude')
+    plt.grid()
+    
+    f,psd= welch(signal,fs=100,nperseg=256)
+    plt.subplot(1,2,2)
+    plt.semilogy(f,psd)
+    plt.xlabel('Frequency (HZ)')
+    plt.ylabel('Power/Frequency (dB/Hz)')
+    plt.title(f'PSD fo {title}')
+    plt.grid()
+    
+    plt.tight_layout()
+    plt.show()
+    
+
+encodings = [
+    ('Unipolar NRZ',unipolar_nrz),
+     ('Unipolar RZ',unipolar_rz),
+    ('Polar RZ',polar_rz),
+    ('Polar NRZ L',polar_nrz_L),
+    ('Polar NRZ I',polar_nrz_I),
+    ('Manchester',Manchester_IEEE),
+    ('Differential Manchester',differential_manchester),   
+]
+
+for title,encoding_functions in encodings:
+    signal = encoding_functions(bitstream)
+    plot_graphs(signal, title)
+    
+        
+
+
+            
+            
